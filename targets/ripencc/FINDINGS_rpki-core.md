@@ -92,6 +92,20 @@ etc.). Not confirmable from this repo alone, and not confirmable from this
 sandbox regardless (no live network egress here even if the endpoint were
 public — see `NOISE_SCREEN.md`).
 
+**Update from the `rpki-publication-server` pass (`FINDINGS_rpki-publication-server.md`):**
+traced `rpki-core`'s outbound side too. `PublishingServerClient.publish(url,
+xml, clientId)` uses a single shared client to push published content to
+`rpki-publication-server`'s namespace named by whatever `clientId` string
+it's given — that server enforces no independent check on which `clientId`
+its one trusted caller (`rpki-core`) is allowed to act as. So this isn't
+just "an attacker can rewrite another member's ROA row in a database" — if
+a ROA/config mutation through the vulnerable REST path triggers the normal
+republish flow (not separately confirmed this pass, but it is the entire
+point of that config existing), the forged content propagates all the way
+to the live, globally-fetched RPKI repository other networks' routers make
+trust decisions from. That's the actual ceiling on this finding's impact,
+not "internal database state."
+
 ### Why this wasn't over-claimed as a P1 and submitted
 
 Per `bug-hunter`'s own house rule ("name the attacker before you invest")
