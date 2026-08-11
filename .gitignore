@@ -1,4 +1,5 @@
-# Cloned bug-bounty targets — reproducible via git clone + scope_check.py,
-# not vendored into this repo's history. Findings/writeups ARE committed.
-targets/*/
-!targets/.gitkeep
+# Cloned bug-bounty target source trees — reproducible via git clone +
+# scope_check.py, not vendored into this repo's history. Findings/writeups
+# under targets/<program>/*.md ARE committed; only the nested repo clones
+# (targets/<program>/<repo>/) are ignored.
+targets/*/*/
