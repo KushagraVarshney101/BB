@@ -18,6 +18,16 @@
         "lirportal.ripe.net": {"decision": "unpaid_no_egress", "tier": "Tier 1", "type": "url", "reason": "live host — requires network egress not available in this environment; program also warns against unauthorized data access here"},
         "*.ripe.net": {"decision": "unpaid_no_egress", "tier": "Tier 2", "type": "wildcard", "reason": "live host — requires network egress not available in this environment"}
       }
+    },
+    "expressvpn-bug-bounty-program": {
+      "platform": "yeswehack",
+      "status": "active",
+      "policy_url": "https://yeswehack.com/programs/expressvpn-bug-bounty-program",
+      "bounty_range": "50-2500 EUR",
+      "notes": "Selected because attacker-controlled input is inherent to the code's contract (VPN protocol parser) — findings need no deployment-reachability assumption, unlike the ripencc REST-API findings. Static review + local PoC only; no traffic to ExpressVPN infrastructure.",
+      "assets": {
+        "github.com/expressvpn/lightway": {"decision": "paid", "type": "source_code"}
+      }
     }
   }
 }
