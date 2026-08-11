@@ -1,0 +1,4 @@
+# Cloned bug-bounty targets — reproducible via git clone + scope_check.py,
+# not vendored into this repo's history. Findings/writeups ARE committed.
+targets/*/
+!targets/.gitkeep

@@ -1,0 +1,23 @@
+{
+  "_comment": "Default-deny curated scope. An asset is only testable if it appears here as 'paid' or 'allowed'. program_details.py shows the *program's advertised* scope; this file is the *own curated* go-live list.",
+  "programs": {
+    "ripencc": {
+      "platform": "intigriti",
+      "status": "active",
+      "policy_url": "https://www.intigriti.com/programs/ripencc/ripencc/detail",
+      "notes": "Static source review only this pass — no live traffic sent from this environment (egress policy blocks intigriti.com). whois repo (Spring/Spring Security Java) is the primary target.",
+      "assets": {
+        "github.com/RIPE-NCC/whois": {"decision": "paid", "tier": "Tier 1", "type": "source_code"},
+        "github.com/RIPE-NCC/rpki-commons": {"decision": "paid", "tier": "Tier 1", "type": "source_code"},
+        "github.com/RIPE-NCC/rpki-core": {"decision": "paid", "tier": "Tier 1", "type": "source_code"},
+        "github.com/RIPE-NCC/rpki-monitoring": {"decision": "paid", "tier": "Tier 2", "type": "source_code"},
+        "github.com/RIPE-NCC/rpki-publication-server": {"decision": "paid", "tier": "Tier 2", "type": "source_code"},
+        "github.com/RIPE-NCC/rpki-ta-0": {"decision": "paid", "tier": "Tier 2", "type": "source_code"},
+        "github.com/RIPE-NCC/rsyncit": {"decision": "paid", "tier": "Tier 2", "type": "source_code"},
+        "access.ripe.net": {"decision": "unpaid_no_egress", "tier": "Tier 1", "type": "url", "reason": "live host — requires network egress not available in this environment"},
+        "lirportal.ripe.net": {"decision": "unpaid_no_egress", "tier": "Tier 1", "type": "url", "reason": "live host — requires network egress not available in this environment; program also warns against unauthorized data access here"},
+        "*.ripe.net": {"decision": "unpaid_no_egress", "tier": "Tier 2", "type": "wildcard", "reason": "live host — requires network egress not available in this environment"}
+      }
+    }
+  }
+}
