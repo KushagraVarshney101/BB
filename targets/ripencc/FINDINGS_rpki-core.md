@@ -107,6 +107,61 @@ someone can confirm reachability — if you have access to check whether
 this port/path is internet- or cross-service-reachable in RIPE's actual
 deployment, that single fact converts this from a note into a P1 report.
 
+## Finding 2 — unauthenticated PII/business-relationship oracle at `/api/public/gdpr/investigate`
+
+**Higher confidence than Finding 1** — this one requires no API key at all,
+by explicit design in `SecurityConfig.java`, so there is no "maybe a key
+gates it" ambiguity; the only open question is whether `/api/public/**`
+is served to the internet at all, and the path segment's own name argues
+that it's *more* likely to be internet-facing than the general `/api/**`
+surface, not less.
+
+**File:** `src/main/java/net/ripe/rpki/rest/service/GdprService.java`
+
+`POST /api/public/gdpr/investigate` takes a JSON body `{id: UUID, emails:
+[String]}` and, for each email, returns:
+
+- which certificate authorities (RIPE members) that email address is
+  registered for ROA-alert notifications on (`"Subscribed '<email>' for
+  alerts for the CA(s) <names>"`) — i.e., **which member organization an
+  email address belongs to**;
+- every `commandType` in the internal audit log that mentions the email
+  (or the `id` UUID), with an occurrence count;
+- an overall `partOfRegistry` boolean.
+
+No authentication, no rate limiting, no restriction to querying your own
+address — `emails` is a list, so this is a batch oracle: feed it a
+candidate list and learn, for each one, whether it's a RIPE NCC portal
+user and which CA(s)/member it's tied to. This is a standard, commonly
+payable broken-access-control class (unauthenticated PII/business-
+relationship enumeration) if the endpoint is actually internet-reachable.
+
+**Signal that this is unintended exposure, not intended design:** the
+method's own Swagger annotation reads *"Endpoint called by Controlroom"* —
+Controlroom being (by every contextual signal in this codebase) an
+internal RIPE NCC admin/ops tool. That is close to a developer admission
+that this was built for internal, tool-to-tool use, and its placement
+under `/api/public/**` (rather than the API-key-gated `/api/**` root,
+where the rest of the CA-management surface lives) looks like an
+oversight in path choice rather than an intentional "self-service GDPR
+lookup for the public" feature — a genuine self-service design would
+scope a caller to their own single, pre-verified email, not accept an
+arbitrary batch.
+
+**Compare:** the other two endpoints actually under `/api/public/**`
+(`SystemStatusService` — health/status, `RoaPrefixesService`/`AspaService`/
+`PublishedObjectsService` under `/api/monitoring/**` — RPKI's own
+published data, public by the protocol's design) are all genuinely
+public-appropriate. `GdprService` is the one outlier that returns
+cross-referenced personal/business data on that path.
+
+**Not yet confirmed:** actual internet reachability (same caveat as
+Finding 1) — flagging here rather than submitting, for the same reason.
+If you can confirm `/api/public/**` is served externally, this is likely
+the stronger and more directly reportable of the two findings in this
+file, since it needs no key/cookie manipulation at all to reach — just an
+HTTP POST.
+
 ## Coverage
 
 - Reviewed: `AbstractCaRestService`, `ApiKeySecurity`, `SpringAuthInterceptor`,
